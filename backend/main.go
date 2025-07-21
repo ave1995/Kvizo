@@ -2,9 +2,14 @@ package main
 
 import (
 	"kvizo-api/database"
-	"net/http"
+	"kvizo-api/handlers"
 
 	"github.com/gin-gonic/gin"
+
+	_ "kvizo-api/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -12,23 +17,15 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
-	})
+	// Swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/testdb", func(c *gin.Context) {
-		sqlDB, err := database.DB.DB()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		err = sqlDB.Ping()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database not reachable"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "Database connection successful"})
-	})
+	//Test actions
+	r.GET("/ping", handlers.PingHandler)
+	r.GET("/testdb", handlers.CreateQuizHandler)
+
+	//Quizzes actions
+	r.POST("/quizzes", handlers.CreateQuizHandler)
 
 	r.Run(":8080")
 }

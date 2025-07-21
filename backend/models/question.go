@@ -7,17 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type AnswerOption string
+type AnswerOption uint8
 
 const (
-	OptionA AnswerOption = "A"
-	OptionB AnswerOption = "B"
-	OptionC AnswerOption = "C"
-	OptionD AnswerOption = "D"
+	OptionA AnswerOption = 1
+	OptionB AnswerOption = 2
+	OptionC AnswerOption = 3
+	OptionD AnswerOption = 4
 )
 
 type Question struct {
 	ID uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+
+	QuizID uuid.UUID `gorm:"type:uuid;not null;index" json:"quiz_id"` // Foreign key
 
 	Title       string       `json:"title"`
 	OptionAText string       `json:"option_a"`

@@ -14,8 +14,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	// config.LoadEnvIfLocal()
-	godotenv.Load("backend.env")
+	godotenv.Load()
 	viper.AutomaticEnv()
 
 	host := viper.GetString("DB_HOST")
@@ -34,7 +33,10 @@ func ConnectDatabase() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	db.AutoMigrate(&models.Question{})
+	err = db.AutoMigrate(&models.Quiz{}, &models.Question{})
+	if err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
+	}
 
 	DB = db
 
