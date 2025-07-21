@@ -22,7 +22,7 @@ func main() {
 
 	//Test actions
 	r.GET("/ping", handlers.PingHandler)
-	r.GET("/testdb", handlers.CreateQuizHandler)
+	r.GET("/testdb", handlers.TestDbHandler)
 
 	//Quizzes actions
 	r.POST("/quizzes", handlers.CreateQuizHandler)
