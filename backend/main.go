@@ -26,6 +26,8 @@ func main() {
 
 	//Quizzes actions
 	r.POST("/quizzes", handlers.CreateQuizHandler)
+	r.GET("/quizzes", handlers.GetQuizzesHandler)
+	r.GET("/quiz/:id", handlers.GetQuizHandler)
 
 	r.Run(":8080")
 }

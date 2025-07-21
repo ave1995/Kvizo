@@ -1,5 +1,5 @@
 definitions:
-  handlers.CreateQuizRequest:
+  dto.CreateQuizRequest:
     properties:
       description:
         type: string
@@ -7,6 +7,19 @@ definitions:
         type: string
     required:
     - title
+    type: object
+  dto.QuizResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.AnswerOption:
     enum:
@@ -65,7 +78,64 @@ definitions:
 info:
   contact: {}
 paths:
+  /quiz/{id}:
+    get:
+      description: Retrieve a single quiz by its ID
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.QuizResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a quiz by ID
+      tags:
+      - quiz
   /quizzes:
+    get:
+      description: Retrieve all quizzes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.QuizResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all quizzes
+      tags:
+      - quizzes
     post:
       consumes:
       - application/json
@@ -76,7 +146,7 @@ paths:
         name: quiz
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateQuizRequest'
+          $ref: '#/definitions/dto.CreateQuizRequest'
       produces:
       - application/json
       responses:

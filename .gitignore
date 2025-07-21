@@ -3,3 +3,7 @@
 
 **/.env
 **/*.env
+
+
+.vscode/launch.json
+**/.vscode/launch.json
