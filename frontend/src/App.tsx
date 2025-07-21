@@ -1,37 +1,39 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import TestDbCheck from "./components/TestDbCheck";
+import { useState, useEffect } from "react";
+import HomePage from "./pages/HomePage";
+import QuizzesPage from "./pages/QuizzesPage";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <TestDbCheck></TestDbCheck>
-    </>
-  );
+  // Handle back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Navigate and update state
+  const navigateTo = (path: string) => {
+    if (path !== window.location.pathname) {
+      window.history.pushState({}, "", path);
+      setCurrentPath(path);
+    }
+  };
+
+  let PageComponent;
+  switch (currentPath) {
+    case "/quizzes":
+      PageComponent = <QuizzesPage navigateTo={navigateTo} />;
+      break;
+    case "/":
+    default:
+      PageComponent = <HomePage navigateTo={navigateTo} />;
+  }
+
+  return <>{PageComponent}</>;
 }
 
 export default App;
