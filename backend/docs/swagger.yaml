@@ -1,4 +1,32 @@
 definitions:
+  dto.CreateQuestionRequest:
+    properties:
+      answer:
+        allOf:
+        - $ref: '#/definitions/models.AnswerOption'
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      option_a:
+        type: string
+      option_b:
+        type: string
+      option_c:
+        type: string
+      option_d:
+        type: string
+      title:
+        type: string
+    required:
+    - answer
+    - option_a
+    - option_b
+    - option_c
+    - option_d
+    - title
+    type: object
   dto.CreateQuizRequest:
     properties:
       description:
@@ -169,4 +197,49 @@ paths:
       summary: Create a new quiz
       tags:
       - quizzes
+  /quizzes/{quiz_id}/questions:
+    post:
+      consumes:
+      - application/json
+      description: Create a question with four options under a specific quiz
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      - description: Question info
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Question'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new question
+      tags:
+      - Questions
 swagger: "2.0"

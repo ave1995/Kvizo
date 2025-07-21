@@ -21,12 +21,12 @@ type Question struct {
 
 	QuizID uuid.UUID `gorm:"type:uuid;not null;index" json:"quiz_id"` // Foreign key
 
-	Title       string       `json:"title"`
-	OptionAText string       `json:"option_a"`
-	OptionBText string       `json:"option_b"`
-	OptionCText string       `json:"option_c"`
-	OptionDText string       `json:"option_d"`
-	Answer      AnswerOption `gorm:"type:char(1)" json:"answer"`
+	Title   string       `json:"title"`
+	OptionA string       `json:"option_a"`
+	OptionB string       `json:"option_b"`
+	OptionC string       `json:"option_c"`
+	OptionD string       `json:"option_d"`
+	Answer  AnswerOption `gorm:"type:smallint" json:"answer"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
