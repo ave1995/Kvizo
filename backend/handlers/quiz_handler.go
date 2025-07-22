@@ -1,14 +1,21 @@
 package handlers
 
 import (
-	"kvizo-api/database"
 	"kvizo-api/dto"
-	"kvizo-api/models"
+	"kvizo-api/internal/repositories"
+	"kvizo-api/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
+
+type QuizHandler struct {
+	service *services.QuizService
+}
+
+func NewQuizHandler(s *services.QuizService) *QuizHandler {
+	return &QuizHandler{service: s}
+}
 
 // CreateQuizHandler godoc
 // @Summary Create a new quiz
@@ -17,11 +24,11 @@ import (
 // @Accept json
 // @Produce json
 // @Param quiz body dto.CreateQuizRequest true "Quiz info"
-// @Success 201 {object} models.Quiz
+// @Success 201 {object} repositories.Quiz
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /quizzes [post]
-func CreateQuizHandler(c *gin.Context) {
+func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 	var req dto.CreateQuizRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -29,12 +36,12 @@ func CreateQuizHandler(c *gin.Context) {
 		return
 	}
 
-	quiz := models.Quiz{
+	quiz := repositories.Quiz{
 		Title:       req.Title,
 		Description: req.Description,
 	}
 
-	if err := database.DB.Create(&quiz).Error; err != nil {
+	if err := h.service.Create(&quiz); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quiz"})
 		return
 	}
@@ -50,17 +57,13 @@ func CreateQuizHandler(c *gin.Context) {
 // @Success 200 {array} dto.QuizResponse
 // @Failure 500 {object} map[string]string
 // @Router /quizzes [get]
-func GetQuizzesHandler(c *gin.Context) {
-	var quizzes []models.Quiz
+func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
+	quizzes, _ := h.service.List()
 
-	if err := database.DB.Find(&quizzes).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve quizzes"})
-		return
-	}
-
+	//TODO: dvakrát foreach s backend/database/database_quiz_repository.go
 	var responses []dto.QuizResponse
 	for _, quiz := range quizzes {
-		responses = append(responses, dto.ToResponse(&quiz))
+		responses = append(responses, dto.ToResponse(quiz))
 	}
 
 	c.JSON(http.StatusOK, responses)
@@ -77,19 +80,13 @@ func GetQuizzesHandler(c *gin.Context) {
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /quiz/{id} [get]
-func GetQuizHandler(c *gin.Context) {
+func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 	idParam := c.Param("id")
-	quizID, err := uuid.Parse(idParam)
+	quiz, err := h.service.GetByID(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
 		return
 	}
 
-	var quiz models.Quiz
-	if err := database.DB.First(&quiz, "id = ?", quizID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Quiz not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, dto.ToResponse(&quiz))
+	c.JSON(http.StatusOK, dto.ToResponse(quiz))
 }

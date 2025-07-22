@@ -3,7 +3,7 @@ definitions:
     properties:
       answer:
         allOf:
-        - $ref: '#/definitions/models.AnswerOption'
+        - $ref: '#/definitions/repositories.AnswerOption'
         enum:
         - 1
         - 2
@@ -49,7 +49,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.AnswerOption:
+  repositories.AnswerOption:
     enum:
     - 1
     - 2
@@ -62,33 +62,32 @@ definitions:
     - OptionB
     - OptionC
     - OptionD
-  models.Question:
+  repositories.Question:
     properties:
       answer:
-        $ref: '#/definitions/models.AnswerOption'
-      created_at:
+        $ref: '#/definitions/repositories.AnswerOption'
+      createdAt:
         type: string
       id:
         type: string
-      option_a:
+      optionA:
         type: string
-      option_b:
+      optionB:
         type: string
-      option_c:
+      optionC:
         type: string
-      option_d:
+      optionD:
         type: string
-      quiz_id:
-        description: Foreign key
+      quizID:
         type: string
       title:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
-  models.Quiz:
+  repositories.Quiz:
     properties:
-      created_at:
+      createdAt:
         type: string
       description:
         type: string
@@ -96,11 +95,11 @@ definitions:
         type: string
       questions:
         items:
-          $ref: '#/definitions/models.Question'
+          $ref: '#/definitions/repositories.Question'
         type: array
       title:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
 info:
@@ -181,7 +180,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.Quiz'
+            $ref: '#/definitions/repositories.Quiz'
         "400":
           description: Bad Request
           schema:
@@ -198,6 +197,44 @@ paths:
       tags:
       - quizzes
   /quizzes/{quiz_id}/questions:
+    get:
+      description: Retrieve all questions belonging to a specific quiz
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repositories.Question'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all questions for a quiz
+      tags:
+      - questions
     post:
       consumes:
       - application/json
@@ -220,7 +257,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.Question'
+            $ref: '#/definitions/repositories.Question'
         "400":
           description: Bad Request
           schema:
@@ -241,5 +278,5 @@ paths:
             type: object
       summary: Create a new question
       tags:
-      - Questions
+      - questions
 swagger: "2.0"

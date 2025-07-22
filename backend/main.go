@@ -3,6 +3,7 @@ package main
 import (
 	"kvizo-api/database"
 	"kvizo-api/handlers"
+	"kvizo-api/services"
 
 	"github.com/gin-gonic/gin"
 
@@ -13,24 +14,36 @@ import (
 )
 
 func main() {
-	database.ConnectDatabase()
+	gorm, _ := database.NewDatabaseConnection()
+	quizRepository := database.NewDatabaseQuizRepository(gorm)
+	questionRepository := database.NewDatabaseQuestionRepository(gorm, quizRepository)
+
+	quizService := services.NewQuizService(quizRepository)
+	questionService := services.NewQuestionService(questionRepository)
+
+	quizHandler := handlers.NewQuizHandler(quizService)
+	questionHandler := handlers.NewQuestionHandler(questionService)
 
 	r := gin.Default()
+
+	//TODO: přidej verzování v1 groups
+	//TODO: správná práce s context
+	//TODO: slog logy
 
 	// Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Test actions
 	r.GET("/ping", handlers.PingHandler)
-	r.GET("/testdb", handlers.TestDbHandler)
 
 	//Quizzes actions
-	r.POST("/quizzes", handlers.CreateQuizHandler)
-	r.GET("/quizzes", handlers.GetQuizzesHandler)
-	r.GET("/quiz/:id", handlers.GetQuizHandler)
+	r.POST("/quizzes", quizHandler.CreateQuizHandler)
+	r.GET("/quizzes", quizHandler.GetQuizzesHandler)
+	r.GET("/quiz/:id", quizHandler.GetQuizHandler)
 
 	//Questions actions
-	r.POST("/quizzes/:quiz_id/questions", handlers.CreateQuestionHandler)
+	r.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
+	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
 
 	r.Run(":8080")
 }

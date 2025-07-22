@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"kvizo-api/models"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -11,9 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-func ConnectDatabase() {
+func NewDatabaseConnection() (*gorm.DB, error) {
 	godotenv.Load()
 	viper.AutomaticEnv()
 
@@ -33,12 +30,10 @@ func ConnectDatabase() {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	err = db.AutoMigrate(&models.Quiz{}, &models.Question{})
+	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{})
 	if err != nil {
 		log.Fatalf("AutoMigrate failed: %v", err)
 	}
 
-	DB = db
-
-	fmt.Println("Database connection established")
+	return db, nil
 }

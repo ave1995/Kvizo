@@ -129,7 +129,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Quiz"
+                            "$ref": "#/definitions/repositories.Quiz"
                         }
                     },
                     "400": {
@@ -154,6 +154,63 @@ const docTemplate = `{
             }
         },
         "/quizzes/{quiz_id}/questions": {
+            "get": {
+                "description": "Retrieve all questions belonging to a specific quiz",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "questions"
+                ],
+                "summary": "Get all questions for a quiz",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Quiz ID",
+                        "name": "quiz_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repositories.Question"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a question with four options under a specific quiz",
                 "consumes": [
@@ -163,7 +220,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Questions"
+                    "questions"
                 ],
                 "summary": "Create a new question",
                 "parameters": [
@@ -188,7 +245,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Question"
+                            "$ref": "#/definitions/repositories.Question"
                         }
                     },
                     "400": {
@@ -243,7 +300,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.AnswerOption"
+                            "$ref": "#/definitions/repositories.AnswerOption"
                         }
                     ]
                 },
@@ -298,7 +355,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AnswerOption": {
+        "repositories.AnswerOption": {
             "type": "integer",
             "format": "int32",
             "enum": [
@@ -314,46 +371,45 @@ const docTemplate = `{
                 "OptionD"
             ]
         },
-        "models.Question": {
+        "repositories.Question": {
             "type": "object",
             "properties": {
                 "answer": {
-                    "$ref": "#/definitions/models.AnswerOption"
+                    "$ref": "#/definitions/repositories.AnswerOption"
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "option_a": {
+                "optionA": {
                     "type": "string"
                 },
-                "option_b": {
+                "optionB": {
                     "type": "string"
                 },
-                "option_c": {
+                "optionC": {
                     "type": "string"
                 },
-                "option_d": {
+                "optionD": {
                     "type": "string"
                 },
-                "quiz_id": {
-                    "description": "Foreign key",
+                "quizID": {
                     "type": "string"
                 },
                 "title": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
         },
-        "models.Quiz": {
+        "repositories.Quiz": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -365,13 +421,13 @@ const docTemplate = `{
                 "questions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Question"
+                        "$ref": "#/definitions/repositories.Question"
                     }
                 },
                 "title": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
