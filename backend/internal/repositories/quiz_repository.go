@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,10 +19,12 @@ type Quiz struct {
 	UpdatedAt time.Time
 }
 
+type QuizID uuid.UUID
+
 type QuizRepository interface {
-	GetByID(id uuid.UUID) (*Quiz, error)
-	List() ([]*Quiz, error)
-	Create(quiz *Quiz) error
+	GetByID(ctx context.Context, id QuizID) (*Quiz, error)
+	List(ctx context.Context) ([]*Quiz, error)
+	Create(ctx context.Context, quiz *Quiz) error
 	// Update(quiz *Quiz) error
 	// Delete(id uuid.UUID) error
 }

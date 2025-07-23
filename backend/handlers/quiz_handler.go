@@ -41,7 +41,7 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 		Description: req.Description,
 	}
 
-	if err := h.service.Create(&quiz); err != nil {
+	if err := h.service.Create(c, &quiz); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quiz"})
 		return
 	}
@@ -58,9 +58,8 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 // @Failure 500 {object} map[string]string
 // @Router /quizzes [get]
 func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
-	quizzes, _ := h.service.List()
+	quizzes, _ := h.service.List(c)
 
-	//TODO: dvakrát foreach s backend/database/database_quiz_repository.go
 	var responses []dto.QuizResponse
 	for _, quiz := range quizzes {
 		responses = append(responses, dto.ToResponse(quiz))
@@ -82,7 +81,7 @@ func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
 // @Router /quiz/{id} [get]
 func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 	idParam := c.Param("id")
-	quiz, err := h.service.GetByID(idParam)
+	quiz, err := h.service.GetQuiz(c, idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
 		return

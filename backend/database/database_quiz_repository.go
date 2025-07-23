@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"kvizo-api/internal/repositories"
 
 	"github.com/google/uuid"
@@ -8,7 +9,7 @@ import (
 )
 
 type DatabaseQuizRepository struct {
-	database *gorm.DB
+	gorm *gorm.DB
 }
 
 func NewDatabaseQuizRepository(db *gorm.DB) *DatabaseQuizRepository {
@@ -16,23 +17,22 @@ func NewDatabaseQuizRepository(db *gorm.DB) *DatabaseQuizRepository {
 		panic("missing db")
 	}
 
-	return &DatabaseQuizRepository{database: db}
+	return &DatabaseQuizRepository{gorm: db}
 }
 
-func (r DatabaseQuizRepository) GetByID(id uuid.UUID) (*repositories.Quiz, error) {
-	var databaseQuiz databaseQuiz
-	err := r.database.First(&databaseQuiz, "id = ?", id).Error
+func (r *DatabaseQuizRepository) GetByID(ctx context.Context, id repositories.QuizID) (*repositories.Quiz, error) {
+	result, err := getByID[databaseQuiz](r.gorm.WithContext(ctx), uuid.UUID(id))
 	if err != nil {
 		return nil, err
 	}
 
-	return databaseQuiz.ToDomainQuiz(), nil
+	return result.ToDomainQuiz(), nil
 }
 
-func (r DatabaseQuizRepository) List() ([]*repositories.Quiz, error) {
+func (r *DatabaseQuizRepository) List(ctx context.Context) ([]*repositories.Quiz, error) {
 	var databaseQuizzes []databaseQuiz
 
-	if err := r.database.Find(&databaseQuizzes).Error; err != nil {
+	if err := r.gorm.WithContext(ctx).Find(&databaseQuizzes).Error; err != nil {
 		return nil, err
 	}
 
@@ -44,13 +44,13 @@ func (r DatabaseQuizRepository) List() ([]*repositories.Quiz, error) {
 	return quizzes, nil
 }
 
-func (r DatabaseQuizRepository) Create(quiz *repositories.Quiz) error {
+func (r *DatabaseQuizRepository) Create(ctx context.Context, quiz *repositories.Quiz) error {
 	databaseQuiz, err := ToDatabaseQuiz(quiz)
 	if err != nil {
 		return err
 	}
 
-	if err := r.database.Create(databaseQuiz).Error; err != nil {
+	if err := r.gorm.WithContext(ctx).Create(databaseQuiz).Error; err != nil {
 		return err
 	}
 

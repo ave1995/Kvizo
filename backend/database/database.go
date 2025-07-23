@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
@@ -36,4 +37,12 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+func getByID[T any](tx *gorm.DB, id uuid.UUID) (*T, error) {
+	var model T
+	if err := tx.First(&model, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &model, nil
 }

@@ -49,7 +49,7 @@ func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 		Answer:  req.Answer,
 	}
 
-	if err := h.service.Create(&question); err != nil {
+	if err := h.service.Create(c, &question); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create question"})
 		return
 	}
@@ -70,7 +70,7 @@ func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 // @Router /quizzes/{quiz_id}/questions [get]
 func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 	idParam := c.Param("quiz_id")
-	questions, err := h.service.ListByQuizID(idParam)
+	questions, err := h.service.ListByQuizID(c, idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

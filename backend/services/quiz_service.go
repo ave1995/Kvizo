@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"kvizo-api/internal/repositories"
 
 	"github.com/google/uuid"
@@ -16,13 +17,15 @@ func NewQuizService(r repositories.QuizRepository) *QuizService {
 }
 
 // TODO: jak správně kontrolovat i v té horní metodě, něják moc ifů
-func (s *QuizService) GetByID(id string) (*repositories.Quiz, error) {
-	quizID, err := uuid.Parse(id)
+func (s *QuizService) GetQuiz(ctx context.Context, id string) (*repositories.Quiz, error) {
+	quizUUID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
 
-	quiz, err := s.repository.GetByID(quizID)
+	quizID := repositories.QuizID(quizUUID)
+
+	quiz, err := s.repository.GetByID(ctx, quizID)
 	if err != nil {
 		return nil, err
 	}
@@ -30,10 +33,10 @@ func (s *QuizService) GetByID(id string) (*repositories.Quiz, error) {
 	return quiz, nil
 }
 
-func (s *QuizService) List() ([]*repositories.Quiz, error) {
-	return s.repository.List()
+func (s *QuizService) List(ctx context.Context) ([]*repositories.Quiz, error) {
+	return s.repository.List(ctx)
 }
 
-func (s *QuizService) Create(quiz *repositories.Quiz) error {
-	return s.repository.Create(quiz)
+func (s *QuizService) Create(ctx context.Context, quiz *repositories.Quiz) error {
+	return s.repository.Create(ctx, quiz)
 }

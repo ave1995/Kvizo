@@ -31,7 +31,7 @@ func (q *databaseQuiz) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (g databaseQuiz) ToDomainQuiz() *repositories.Quiz {
+func (g *databaseQuiz) ToDomainQuiz() *repositories.Quiz {
 	return &repositories.Quiz{
 		ID:          g.ID.String(),
 		Title:       g.Title,
