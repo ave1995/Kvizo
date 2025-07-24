@@ -6,6 +6,8 @@ import (
 	"kvizo-api/internal/loggers"
 	"kvizo-api/internal/middlewares"
 	"kvizo-api/services"
+	"log/slog"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
@@ -48,6 +50,7 @@ func main() {
 
 	err := r.Run(":8080")
 	if err != nil {
-
+		slog.Error("failed to start Gin server", slog.Any("error", err))
+		os.Exit(1)
 	}
 }
