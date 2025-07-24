@@ -105,7 +105,64 @@ definitions:
 info:
   contact: {}
 paths:
+  /questions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a question by ID.
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Question deleted successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a question
+      tags:
+      - question
   /quiz/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a quiz by ID.
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: Quiz deleted successfully'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a quiz
+      tags:
+      - quiz
     get:
       description: Retrieve a single quiz by its ID
       parameters:

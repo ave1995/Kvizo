@@ -94,3 +94,26 @@ func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, dto.ToResponse(quiz))
 }
+
+// DeleteQuizHandler deletes a quiz by its ID.
+// @Summary Delete a quiz
+// @Description Deletes a quiz by ID.
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Param id path string true "Quiz ID"
+// @Success 200 {object} map[string]string "message: Quiz deleted successfully"
+// @Failure 500 {object} map[string]string "error message"
+// @Router /quiz/{id} [delete]
+func (h *QuizHandler) DeleteQuizHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	err := h.service.Delete(c, idParam)
+	if err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Quiz deleted successfully",
+	})
+}

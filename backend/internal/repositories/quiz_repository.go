@@ -26,5 +26,5 @@ type QuizRepository interface {
 	List(ctx context.Context) ([]*Quiz, error)
 	Create(ctx context.Context, quiz *Quiz) error
 	// Update(quiz *Quiz) error
-	// Delete(id uuid.UUID) error
+	Delete(ctx context.Context, id QuizID) error
 }

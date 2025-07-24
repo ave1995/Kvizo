@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -37,7 +36,7 @@ func loadDBConfig() (*DBConfig, error) {
 func NewDatabaseConnection() (*gorm.DB, error) {
 	cfg, err := loadDBConfig()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("loadDBConfig: %w", err)
 	}
 
 	dsn := fmt.Sprintf(
@@ -47,12 +46,12 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		return nil, fmt.Errorf("gorm.Open: %w", err)
 	}
 
 	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{})
 	if err != nil {
-		log.Fatalf("AutoMigrate failed: %v", err)
+		return nil, fmt.Errorf("db.AutoMigrate: %w", err)
 	}
 
 	return db, nil
@@ -64,4 +63,12 @@ func getByID[T any](tx *gorm.DB, id uuid.UUID) (*T, error) {
 		return nil, err
 	}
 	return &model, nil
+}
+
+type uuidLike interface {
+	~[16]byte
+}
+
+func toUUID[T uuidLike](id T) uuid.UUID {
+	return uuid.UUID(id)
 }

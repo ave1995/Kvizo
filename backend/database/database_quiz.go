@@ -13,7 +13,7 @@ type databaseQuiz struct {
 	Title       string
 	Description string
 
-	Questions []databaseQuestion `gorm:"foreignKey:QuizID;references:ID"`
+	Questions []databaseQuestion `gorm:"foreignKey:QuizID;references:ID;constraint:OnDelete:CASCADE;"`
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

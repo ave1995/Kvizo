@@ -79,3 +79,26 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, questions)
 }
+
+// DeleteQuestionHandler deletes a quiz by its ID.
+// @Summary Delete a question
+// @Description Deletes a question by ID.
+// @Tags question
+// @Accept json
+// @Produce json
+// @Param id path string true "Question ID"
+// @Success 200 {object} map[string]string "message: Question deleted successfully"
+// @Failure 500 {object} map[string]string "error message"
+// @Router /questions/{id} [delete]
+func (h *QuestionHandler) DeleteQuestionHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	err := h.service.Delete(c, idParam)
+	if err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Question deleted successfully",
+	})
+}

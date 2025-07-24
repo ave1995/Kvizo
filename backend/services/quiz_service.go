@@ -21,9 +21,7 @@ func (s *QuizService) GetQuiz(ctx context.Context, id string) (*repositories.Qui
 		return nil, err
 	}
 
-	quiz, err := s.repository.GetByID(
-		ctx,
-		repositories.QuizID(quizUUID))
+	quiz, err := s.repository.GetByID(ctx, repositories.QuizID(quizUUID))
 	if err != nil {
 		return nil, err
 	}
@@ -37,4 +35,13 @@ func (s *QuizService) List(ctx context.Context) ([]*repositories.Quiz, error) {
 
 func (s *QuizService) Create(ctx context.Context, quiz *repositories.Quiz) error {
 	return s.repository.Create(ctx, quiz)
+}
+
+func (s *QuizService) Delete(ctx context.Context, id string) error {
+	quizUUID, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+
+	return s.repository.Delete(ctx, repositories.QuizID(quizUUID))
 }

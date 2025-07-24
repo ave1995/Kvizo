@@ -46,3 +46,12 @@ func (s *QuestionService) ListByQuizID(ctx context.Context, quizID string) ([]*r
 func (s *QuestionService) Create(ctx context.Context, question *repositories.Question) error {
 	return s.repository.Create(ctx, question)
 }
+
+func (s *QuestionService) Delete(ctx context.Context, id string) error {
+	questionUUID, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+
+	return s.repository.Delete(ctx, repositories.QuestionID(questionUUID))
+}

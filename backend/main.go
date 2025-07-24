@@ -20,9 +20,21 @@ import (
 func main() {
 	loggers.Init()
 
-	gorm, _ := database.NewDatabaseConnection()
-	quizRepository := database.NewDatabaseQuizRepository(gorm)
-	questionRepository := database.NewDatabaseQuestionRepository(gorm, quizRepository)
+	gorm, err := database.NewDatabaseConnection()
+	if err != nil {
+		slog.Error("failed to ini Database Connection", slog.Any("error", err))
+		os.Exit(1)
+	}
+	quizRepository, err := database.NewDatabaseQuizRepository(gorm)
+	if err != nil {
+		slog.Error("failed to ini Quiz Repository", slog.Any("error", err))
+		os.Exit(1)
+	}
+	questionRepository, err := database.NewDatabaseQuestionRepository(gorm, quizRepository)
+	if err != nil {
+		slog.Error("failed to ini Question Repository", slog.Any("error", err))
+		os.Exit(1)
+	}
 
 	quizService := services.NewQuizService(quizRepository)
 	questionService := services.NewQuestionService(questionRepository)
@@ -43,12 +55,14 @@ func main() {
 	r.POST("/quizzes", quizHandler.CreateQuizHandler)
 	r.GET("/quizzes", quizHandler.GetQuizzesHandler)
 	r.GET("/quiz/:id", quizHandler.GetQuizHandler)
+	r.DELETE("/quiz/:id", quizHandler.DeleteQuizHandler)
 
 	//Questions actions
 	r.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
 	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
+	r.DELETE("/questions/:id", questionHandler.DeleteQuestionHandler)
 
-	err := r.Run(":8080")
+	err = r.Run(":8080")
 	if err != nil {
 		slog.Error("failed to start Gin server", slog.Any("error", err))
 		os.Exit(1)

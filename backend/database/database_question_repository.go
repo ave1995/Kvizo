@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
+	"errors"
 	"kvizo-api/internal/repositories"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -13,19 +13,19 @@ type QuestionRepository struct {
 	quizRepo *QuizRepository
 }
 
-func NewDatabaseQuestionRepository(db *gorm.DB, quizRepo *QuizRepository) *QuestionRepository {
+func NewDatabaseQuestionRepository(db *gorm.DB, quizRepo *QuizRepository) (*QuestionRepository, error) {
 	if db == nil {
-		panic("missing db")
+		return nil, errors.New("NewDatabaseQuestionRepository: missing gorm DB")
 	}
 	if quizRepo == nil {
-		panic("missing quizRepo")
+		return nil, errors.New("NewDatabaseQuestionRepository: missing Quiz Repository")
 	}
 
-	return &QuestionRepository{gorm: db, quizRepo: quizRepo}
+	return &QuestionRepository{gorm: db, quizRepo: quizRepo}, nil
 }
 
 func (r *QuestionRepository) GetByID(ctx context.Context, id repositories.QuestionID) (*repositories.Question, error) {
-	result, err := getByID[databaseQuestion](r.gorm.WithContext(ctx), uuid.UUID(id))
+	result, err := getByID[databaseQuestion](r.gorm.WithContext(ctx), toUUID(id))
 	if err != nil {
 		return nil, err
 	}
@@ -37,13 +37,13 @@ func (r *QuestionRepository) ListByQuizID(ctx context.Context, quizID repositori
 	var questions []*repositories.Question
 
 	err := r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		_, err := getByID[databaseQuiz](tx, uuid.UUID(quizID))
+		_, err := getByID[databaseQuiz](tx, toUUID(quizID))
 		if err != nil {
 			return err
 		}
 
 		var dbQuestions []databaseQuestion
-		if err := tx.Where("quiz_id = ?", quizID).Find(&dbQuestions).Error; err != nil {
+		if err := tx.Where("quiz_id = ?", toUUID(quizID)).Find(&dbQuestions).Error; err != nil {
 			return err
 		}
 
@@ -70,5 +70,14 @@ func (r *QuestionRepository) Create(ctx context.Context, question *repositories.
 		}
 
 		return tx.Create(databaseQuestion).Error
+	})
+}
+
+func (r *QuestionRepository) Delete(ctx context.Context, id repositories.QuestionID) error {
+	return r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(&databaseQuestion{}, toUUID(id)).Error; err != nil {
+			return err
+		}
+		return nil
 	})
 }
