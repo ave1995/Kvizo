@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"kvizo-api/internal/auth"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
@@ -49,7 +50,7 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 		return nil, fmt.Errorf("gorm.Open: %w", err)
 	}
 
-	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{})
+	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{}, &auth.DatabaseUser{})
 	if err != nil {
 		return nil, fmt.Errorf("db.AutoMigrate: %w", err)
 	}
@@ -57,9 +58,9 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 	return db, nil
 }
 
-func getByID[T any](tx *gorm.DB, id uuid.UUID) (*T, error) {
+func getByID[T any](gorm *gorm.DB, id uuid.UUID) (*T, error) {
 	var model T
-	if err := tx.First(&model, "id = ?", id).Error; err != nil {
+	if err := gorm.First(&model, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &model, nil

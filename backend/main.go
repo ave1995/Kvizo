@@ -3,6 +3,7 @@ package main
 import (
 	"kvizo-api/database"
 	"kvizo-api/handlers"
+	"kvizo-api/internal/auth"
 	"kvizo-api/internal/loggers"
 	"kvizo-api/internal/middlewares"
 	"kvizo-api/services"
@@ -35,12 +36,19 @@ func main() {
 		slog.Error("failed to ini Question Repository", slog.Any("error", err))
 		os.Exit(1)
 	}
+	authenticationRepository, err := auth.NewDatabaseUserRepository(gorm)
+	if err != nil {
+		slog.Error("failed to ini Authentication Repository", slog.Any("error", err))
+		os.Exit(1)
+	}
 
 	quizService := services.NewQuizService(quizRepository)
 	questionService := services.NewQuestionService(questionRepository)
 
 	quizHandler := handlers.NewQuizHandler(quizService)
 	questionHandler := handlers.NewQuestionHandler(questionService)
+
+	authHandler := handlers.NewAuthHandler(authenticationRepository)
 
 	r := gin.Default()
 
@@ -63,6 +71,12 @@ func main() {
 	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
 	r.PUT("/question/:id", questionHandler.UpdateQuestionHandler)
 	r.DELETE("/question/:id", questionHandler.DeleteQuestionHandler)
+
+	authGroup := r.Group("/auth")
+	{
+		authGroup.POST("/register", authHandler.RegisterUserHandler)
+		authGroup.POST("/login", authHandler.LoginUserHandler)
+	}
 
 	err = r.Run(":8080")
 	if err != nil {
