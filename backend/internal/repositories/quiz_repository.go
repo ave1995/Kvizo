@@ -25,6 +25,6 @@ type QuizRepository interface {
 	GetByID(ctx context.Context, id QuizID) (*Quiz, error)
 	List(ctx context.Context) ([]*Quiz, error)
 	Create(ctx context.Context, quiz *Quiz) error
-	// Update(quiz *Quiz) error
+	Update(ctx context.Context, quiz *Quiz) error
 	Delete(ctx context.Context, id QuizID) error
 }

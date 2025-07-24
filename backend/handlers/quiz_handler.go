@@ -24,13 +24,13 @@ func NewQuizHandler(s *services.QuizService) *QuizHandler {
 // @Tags quizzes
 // @Accept json
 // @Produce json
-// @Param quiz body dto.CreateQuizRequest true "Quiz info"
+// @Param quiz body dto.QuizRequest true "Quiz info"
 // @Success 201 {object} repositories.Quiz
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /quizzes [post]
 func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
-	var req dto.CreateQuizRequest
+	var req dto.QuizRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		responses.RespondWithInternalError(c, err)
@@ -93,6 +93,43 @@ func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.ToResponse(quiz))
+}
+
+// UpdateQuizHandler godoc
+// @Summary Update a quiz
+// @Description Update the title and description of an existing quiz
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Param id path string true "Quiz ID"
+// @Param quiz body dto.QuizRequest true "Updated quiz info"
+// @Success 200 {object} repositories.Quiz
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /quiz/{id} [put]
+func (h *QuizHandler) UpdateQuizHandler(c *gin.Context) {
+	var req dto.QuizRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	quizID := c.Param("id")
+
+	quiz := repositories.Quiz{
+		ID:          quizID,
+		Title:       req.Title,
+		Description: req.Description,
+	}
+
+	if err := h.service.Update(c, &quiz); err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, quiz)
 }
 
 // DeleteQuizHandler deletes a quiz by its ID.

@@ -72,3 +72,14 @@ type uuidLike interface {
 func toUUID[T uuidLike](id T) uuid.UUID {
 	return uuid.UUID(id)
 }
+
+func parseRequiredUUID(fieldName, value string) (uuid.UUID, error) {
+	if value == "" || value == "00000000-0000-0000-0000-000000000000" {
+		return uuid.Nil, fmt.Errorf("%s cannot be empty", fieldName)
+	}
+	parsed, err := uuid.Parse(value)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("invalid %s: %w", fieldName, err)
+	}
+	return parsed, nil
+}

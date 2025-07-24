@@ -25,14 +25,14 @@ func NewQuestionHandler(s *services.QuestionService) *QuestionHandler {
 // @Accept json
 // @Produce json
 // @Param quiz_id path string true "Quiz ID"
-// @Param question body dto.CreateQuestionRequest true "Question info"
+// @Param question body dto.QuestionRequest true "Question info"
 // @Success 201 {object} repositories.Question
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /quizzes/{quiz_id}/questions [post]
 func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
-	var req dto.CreateQuestionRequest
+	var req dto.QuestionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		responses.RespondWithInternalError(c, err)
 		return
@@ -80,6 +80,46 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, questions)
 }
 
+// UpdateQuestionHandler godoc
+// @Summary Update a question
+// @Description Update the details of a question under a specific quiz
+// @Tags question
+// @Accept json
+// @Produce json
+// @Param id path string true "Question ID"
+// @Param question body dto.QuestionRequest true "Updated question info"
+// @Success 200 {object} repositories.Question
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /question/{id} [put]
+func (h *QuestionHandler) UpdateQuestionHandler(c *gin.Context) {
+	var req dto.QuestionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	questionID := c.Param("id")
+
+	question := repositories.Question{
+		ID:      questionID,
+		Title:   req.Title,
+		OptionA: req.OptionA,
+		OptionB: req.OptionB,
+		OptionC: req.OptionC,
+		OptionD: req.OptionD,
+		Answer:  req.Answer,
+	}
+
+	if err := h.service.Update(c, &question); err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, question)
+}
+
 // DeleteQuestionHandler deletes a quiz by its ID.
 // @Summary Delete a question
 // @Description Deletes a question by ID.
@@ -89,7 +129,7 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 // @Param id path string true "Question ID"
 // @Success 200 {object} map[string]string "message: Question deleted successfully"
 // @Failure 500 {object} map[string]string "error message"
-// @Router /questions/{id} [delete]
+// @Router /question/{id} [delete]
 func (h *QuestionHandler) DeleteQuestionHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	err := h.service.Delete(c, idParam)

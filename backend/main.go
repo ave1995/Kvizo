@@ -55,12 +55,14 @@ func main() {
 	r.POST("/quizzes", quizHandler.CreateQuizHandler)
 	r.GET("/quizzes", quizHandler.GetQuizzesHandler)
 	r.GET("/quiz/:id", quizHandler.GetQuizHandler)
+	r.PUT("/quiz/:id", quizHandler.UpdateQuizHandler)
 	r.DELETE("/quiz/:id", quizHandler.DeleteQuizHandler)
 
 	//Questions actions
 	r.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
 	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
-	r.DELETE("/questions/:id", questionHandler.DeleteQuestionHandler)
+	r.PUT("/question/:id", questionHandler.UpdateQuestionHandler)
+	r.DELETE("/question/:id", questionHandler.DeleteQuestionHandler)
 
 	err = r.Run(":8080")
 	if err != nil {

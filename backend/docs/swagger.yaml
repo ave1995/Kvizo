@@ -1,5 +1,5 @@
 definitions:
-  dto.CreateQuestionRequest:
+  dto.QuestionRequest:
     properties:
       answer:
         allOf:
@@ -27,7 +27,7 @@ definitions:
     - option_d
     - title
     type: object
-  dto.CreateQuizRequest:
+  dto.QuizRequest:
     properties:
       description:
         type: string
@@ -105,7 +105,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /questions/{id}:
+  /question/{id}:
     delete:
       consumes:
       - application/json
@@ -132,6 +132,50 @@ paths:
               type: string
             type: object
       summary: Delete a question
+      tags:
+      - question
+    put:
+      consumes:
+      - application/json
+      description: Update the details of a question under a specific quiz
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated question info
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repositories.Question'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a question
       tags:
       - question
   /quiz/{id}:
@@ -199,6 +243,50 @@ paths:
       summary: Get a quiz by ID
       tags:
       - quiz
+    put:
+      consumes:
+      - application/json
+      description: Update the title and description of an existing quiz
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated quiz info
+        in: body
+        name: quiz
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QuizRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/repositories.Quiz'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a quiz
+      tags:
+      - quiz
   /quizzes:
     get:
       description: Retrieve all quizzes
@@ -230,7 +318,7 @@ paths:
         name: quiz
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateQuizRequest'
+          $ref: '#/definitions/dto.QuizRequest'
       produces:
       - application/json
       responses:
@@ -307,7 +395,7 @@ paths:
         name: question
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateQuestionRequest'
+          $ref: '#/definitions/dto.QuestionRequest'
       produces:
       - application/json
       responses:

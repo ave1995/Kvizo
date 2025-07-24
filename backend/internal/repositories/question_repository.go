@@ -39,6 +39,6 @@ type QuestionRepository interface {
 	GetByID(ctx context.Context, id QuestionID) (*Question, error)
 	ListByQuizID(ctx context.Context, quizID QuizID) ([]*Question, error)
 	Create(ctx context.Context, quiz *Question) error
-	// Update(quiz *Question) error
+	Update(ctx context.Context, quiz *Question) error
 	Delete(ctx context.Context, id QuestionID) error
 }

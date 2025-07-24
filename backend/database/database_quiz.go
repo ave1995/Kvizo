@@ -44,8 +44,19 @@ func (g *databaseQuiz) ToDomainQuiz() *repositories.Quiz {
 	}
 }
 
-func toDatabaseQuiz(dq *repositories.Quiz) (*databaseQuiz, error) {
+func toDatabaseQuiz(dq *repositories.Quiz, requireID bool) (*databaseQuiz, error) {
+	var quizID uuid.UUID
+	var err error
+
+	if requireID {
+		quizID, err = parseRequiredUUID("ID", dq.ID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &databaseQuiz{
+		ID:          quizID,
 		Title:       dq.Title,
 		Description: dq.Description,
 		CreatedAt:   dq.CreatedAt,

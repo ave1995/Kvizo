@@ -46,16 +46,35 @@ func (r *QuizRepository) List(ctx context.Context) ([]*repositories.Quiz, error)
 }
 
 func (r *QuizRepository) Create(ctx context.Context, quiz *repositories.Quiz) error {
-	databaseQuiz, err := toDatabaseQuiz(quiz)
+	dbQuiz, err := toDatabaseQuiz(quiz, false)
 	if err != nil {
 		return err
 	}
 
-	if err := r.gorm.WithContext(ctx).Create(databaseQuiz).Error; err != nil {
+	if err := r.gorm.WithContext(ctx).Create(dbQuiz).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (r *QuizRepository) Update(ctx context.Context, quiz *repositories.Quiz) error {
+	dbQuiz, err := toDatabaseQuiz(quiz, true)
+	if err != nil {
+		return err
+	}
+
+	return r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		existing, err := getByID[databaseQuiz](tx, dbQuiz.ID)
+		if err != nil {
+			return err
+		}
+
+		existing.Title = dbQuiz.Title
+		existing.Description = dbQuiz.Description
+
+		return tx.Save(existing).Error
+	})
 }
 
 func (r *QuizRepository) Delete(ctx context.Context, id repositories.QuizID) error {

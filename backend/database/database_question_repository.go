@@ -58,18 +58,41 @@ func (r *QuestionRepository) ListByQuizID(ctx context.Context, quizID repositori
 }
 
 func (r *QuestionRepository) Create(ctx context.Context, question *repositories.Question) error {
-	databaseQuestion, err := ToDatabaseQuestion(question)
+	dbQuestion, err := ToDatabaseQuestion(question, false)
 	if err != nil {
 		return err
 	}
 
 	return r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		_, err := getByID[databaseQuiz](tx, databaseQuestion.QuizID)
+		_, err := getByID[databaseQuiz](tx, dbQuestion.QuizID)
 		if err != nil {
 			return err
 		}
 
-		return tx.Create(databaseQuestion).Error
+		return tx.Create(dbQuestion).Error
+	})
+}
+
+func (r *QuestionRepository) Update(ctx context.Context, question *repositories.Question) error {
+	dbQuestion, err := ToDatabaseQuestion(question, true)
+	if err != nil {
+		return err
+	}
+
+	return r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		existing, err := getByID[databaseQuestion](tx, dbQuestion.ID)
+		if err != nil {
+			return err
+		}
+
+		existing.Title = dbQuestion.Title
+		existing.OptionA = dbQuestion.OptionA
+		existing.OptionB = dbQuestion.OptionB
+		existing.OptionC = dbQuestion.OptionC
+		existing.OptionD = dbQuestion.OptionD
+		existing.Answer = dbQuestion.Answer
+
+		return tx.Save(existing).Error
 	})
 }
 

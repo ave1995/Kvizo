@@ -37,6 +37,10 @@ func (s *QuizService) Create(ctx context.Context, quiz *repositories.Quiz) error
 	return s.repository.Create(ctx, quiz)
 }
 
+func (s *QuizService) Update(ctx context.Context, quiz *repositories.Quiz) error {
+	return s.repository.Update(ctx, quiz)
+}
+
 func (s *QuizService) Delete(ctx context.Context, id string) error {
 	quizUUID, err := uuid.Parse(id)
 	if err != nil {

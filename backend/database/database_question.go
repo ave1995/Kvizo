@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"kvizo-api/internal/repositories"
 	"time"
 
@@ -54,20 +53,22 @@ func (g *databaseQuestion) ToDomainQuestion() *repositories.Question {
 	}
 }
 
-func ToDatabaseQuestion(q *repositories.Question) (*databaseQuestion, error) {
-	var quizID uuid.UUID
-	var err error
+func ToDatabaseQuestion(q *repositories.Question, requireID bool) (*databaseQuestion, error) {
+	quizID, err := parseRequiredUUID("QuizID", q.QuizID)
+	if err != nil {
+		return nil, err
+	}
 
-	if q.QuizID == "" || q.QuizID == "00000000-0000-0000-0000-000000000000" {
-		return nil, fmt.Errorf("QuizID cannot be empty")
-	} else {
-		quizID, err = uuid.Parse(q.QuizID)
+	var id uuid.UUID
+	if requireID {
+		id, err = parseRequiredUUID("ID", q.ID)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return &databaseQuestion{
+		ID:      id,
 		QuizID:  quizID,
 		Title:   q.Title,
 		OptionA: q.OptionA,

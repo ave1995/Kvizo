@@ -2,7 +2,7 @@ package dto
 
 import "kvizo-api/internal/repositories"
 
-type CreateQuestionRequest struct {
+type QuestionRequest struct {
 	Title   string                    `json:"title" binding:"required"`
 	OptionA string                    `json:"option_a" binding:"required"`
 	OptionB string                    `json:"option_b" binding:"required"`
