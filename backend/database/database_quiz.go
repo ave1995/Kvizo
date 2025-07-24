@@ -20,8 +20,10 @@ type databaseQuiz struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-func (databaseQuiz) TableName() string {
-	return "quizzes"
+const QuizTableName = "quizzes"
+
+func (*databaseQuiz) TableName() string {
+	return QuizTableName
 }
 
 func (q *databaseQuiz) BeforeCreate(tx *gorm.DB) (err error) {
@@ -42,7 +44,7 @@ func (g *databaseQuiz) ToDomainQuiz() *repositories.Quiz {
 	}
 }
 
-func ToDatabaseQuiz(dq *repositories.Quiz) (*databaseQuiz, error) {
+func toDatabaseQuiz(dq *repositories.Quiz) (*databaseQuiz, error) {
 	return &databaseQuiz{
 		Title:       dq.Title,
 		Description: dq.Description,

@@ -26,8 +26,10 @@ type databaseQuestion struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
-func (databaseQuestion) TableName() string {
-	return "questions"
+const QuestionTableName = "questions"
+
+func (*databaseQuestion) TableName() string {
+	return QuestionTableName
 }
 
 func (q *databaseQuestion) BeforeCreate(tx *gorm.DB) (err error) {
@@ -37,7 +39,7 @@ func (q *databaseQuestion) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (g databaseQuestion) ToDomainQuestion() *repositories.Question {
+func (g *databaseQuestion) ToDomainQuestion() *repositories.Question {
 	return &repositories.Question{
 		ID:        g.ID.String(),
 		QuizID:    g.QuizID.String(),
@@ -78,8 +80,8 @@ func ToDatabaseQuestion(q *repositories.Question) (*databaseQuestion, error) {
 
 func ToDomainQuestions(questions []databaseQuestion) []*repositories.Question {
 	result := make([]*repositories.Question, 0, len(questions))
-	for _, q := range questions {
-		result = append(result, q.ToDomainQuestion())
+	for i, q := range questions {
+		result[i] = q.ToDomainQuestion()
 	}
 	return result
 }

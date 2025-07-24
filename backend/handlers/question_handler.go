@@ -3,6 +3,7 @@ package handlers
 import (
 	"kvizo-api/dto"
 	"kvizo-api/internal/repositories"
+	"kvizo-api/internal/responses"
 	"kvizo-api/services"
 	"net/http"
 
@@ -33,7 +34,7 @@ func NewQuestionHandler(s *services.QuestionService) *QuestionHandler {
 func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 	var req dto.CreateQuestionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 
@@ -50,7 +51,7 @@ func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 	}
 
 	if err := h.service.Create(c, &question); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create question"})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 
@@ -72,7 +73,7 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 	idParam := c.Param("quiz_id")
 	questions, err := h.service.ListByQuizID(c, idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 

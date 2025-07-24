@@ -3,6 +3,8 @@ package main
 import (
 	"kvizo-api/database"
 	"kvizo-api/handlers"
+	"kvizo-api/internal/loggers"
+	"kvizo-api/internal/middlewares"
 	"kvizo-api/services"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +16,8 @@ import (
 )
 
 func main() {
+	loggers.Init()
+
 	gorm, _ := database.NewDatabaseConnection()
 	quizRepository := database.NewDatabaseQuizRepository(gorm)
 	questionRepository := database.NewDatabaseQuestionRepository(gorm, quizRepository)
@@ -26,15 +30,12 @@ func main() {
 
 	r := gin.Default()
 
+	r.Use(middlewares.ErrorLoggingMiddleware())
+
 	//TODO: přidej verzování v1 groups
-	//TODO: správná práce s context
-	//TODO: slog logy
 
 	// Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	//Test actions
-	r.GET("/ping", handlers.PingHandler)
 
 	//Quizzes actions
 	r.POST("/quizzes", quizHandler.CreateQuizHandler)
@@ -45,5 +46,8 @@ func main() {
 	r.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
 	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
 
-	r.Run(":8080")
+	err := r.Run(":8080")
+	if err != nil {
+
+	}
 }

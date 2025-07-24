@@ -3,6 +3,7 @@ package handlers
 import (
 	"kvizo-api/dto"
 	"kvizo-api/internal/repositories"
+	"kvizo-api/internal/responses"
 	"kvizo-api/services"
 	"net/http"
 
@@ -32,7 +33,7 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 	var req dto.CreateQuizRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 
@@ -42,7 +43,7 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 	}
 
 	if err := h.service.Create(c, &quiz); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quiz"})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 
@@ -58,7 +59,11 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 // @Failure 500 {object} map[string]string
 // @Router /quizzes [get]
 func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
-	quizzes, _ := h.service.List(c)
+	quizzes, err := h.service.List(c)
+	if err != nil {
+		responses.RespondWithInternalError(c, err)
+		return
+	}
 
 	var responses []dto.QuizResponse
 	for _, quiz := range quizzes {
@@ -83,7 +88,7 @@ func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	quiz, err := h.service.GetQuiz(c, idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quiz ID"})
+		responses.RespondWithInternalError(c, err)
 		return
 	}
 

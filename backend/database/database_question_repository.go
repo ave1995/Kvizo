@@ -8,12 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type DatabaseQuestionRepository struct {
+type QuestionRepository struct {
 	gorm     *gorm.DB
-	quizRepo *DatabaseQuizRepository
+	quizRepo *QuizRepository
 }
 
-func NewDatabaseQuestionRepository(db *gorm.DB, quizRepo *DatabaseQuizRepository) *DatabaseQuestionRepository {
+func NewDatabaseQuestionRepository(db *gorm.DB, quizRepo *QuizRepository) *QuestionRepository {
 	if db == nil {
 		panic("missing db")
 	}
@@ -21,10 +21,10 @@ func NewDatabaseQuestionRepository(db *gorm.DB, quizRepo *DatabaseQuizRepository
 		panic("missing quizRepo")
 	}
 
-	return &DatabaseQuestionRepository{gorm: db, quizRepo: quizRepo}
+	return &QuestionRepository{gorm: db, quizRepo: quizRepo}
 }
 
-func (r *DatabaseQuestionRepository) GetByID(ctx context.Context, id repositories.QuestionID) (*repositories.Question, error) {
+func (r *QuestionRepository) GetByID(ctx context.Context, id repositories.QuestionID) (*repositories.Question, error) {
 	result, err := getByID[databaseQuestion](r.gorm.WithContext(ctx), uuid.UUID(id))
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (r *DatabaseQuestionRepository) GetByID(ctx context.Context, id repositorie
 	return result.ToDomainQuestion(), nil
 }
 
-func (r *DatabaseQuestionRepository) ListByQuizID(ctx context.Context, quizID repositories.QuizID) ([]*repositories.Question, error) {
+func (r *QuestionRepository) ListByQuizID(ctx context.Context, quizID repositories.QuizID) ([]*repositories.Question, error) {
 	var questions []*repositories.Question
 
 	err := r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -57,7 +57,7 @@ func (r *DatabaseQuestionRepository) ListByQuizID(ctx context.Context, quizID re
 	return questions, err
 }
 
-func (r *DatabaseQuestionRepository) Create(ctx context.Context, question *repositories.Question) error {
+func (r *QuestionRepository) Create(ctx context.Context, question *repositories.Question) error {
 	databaseQuestion, err := ToDatabaseQuestion(question)
 	if err != nil {
 		return err
