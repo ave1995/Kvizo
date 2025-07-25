@@ -30,7 +30,7 @@ func NewQuestionHandler(s *services.QuestionService) *QuestionHandler {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /quizzes/{quiz_id}/questions [post]
+// @Router /api/quizzes/{quiz_id}/questions [post]
 func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 	var req dto.QuestionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -68,7 +68,7 @@ func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /quizzes/{quiz_id}/questions [get]
+// @Router /api/quizzes/{quiz_id}/questions [get]
 func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 	idParam := c.Param("quiz_id")
 	questions, err := h.service.ListByQuizID(c, idParam)
@@ -92,7 +92,7 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /question/{id} [put]
+// @Router /api/question/{id} [put]
 func (h *QuestionHandler) UpdateQuestionHandler(c *gin.Context) {
 	var req dto.QuestionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -129,7 +129,7 @@ func (h *QuestionHandler) UpdateQuestionHandler(c *gin.Context) {
 // @Param id path string true "Question ID"
 // @Success 200 {object} map[string]string "message: Question deleted successfully"
 // @Failure 500 {object} map[string]string "error message"
-// @Router /question/{id} [delete]
+// @Router /api/question/{id} [delete]
 func (h *QuestionHandler) DeleteQuestionHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	err := h.service.Delete(c, idParam)

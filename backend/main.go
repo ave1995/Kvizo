@@ -9,6 +9,7 @@ import (
 	"kvizo-api/services"
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -50,27 +51,30 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler(authenticationRepository)
 
+	jwtManager := auth.NewJWTManager("RadekSmrdi", time.Minute)
+
 	r := gin.Default()
 
 	r.Use(middlewares.ErrorLoggingMiddleware())
 
-	//TODO: přidej verzování v1 groups
+	protected := r.Group("/api")
+	protected.Use(auth.AuthMiddleware(jwtManager))
 
 	// Swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	//Quizzes actions
-	r.POST("/quizzes", quizHandler.CreateQuizHandler)
-	r.GET("/quizzes", quizHandler.GetQuizzesHandler)
-	r.GET("/quiz/:id", quizHandler.GetQuizHandler)
-	r.PUT("/quiz/:id", quizHandler.UpdateQuizHandler)
-	r.DELETE("/quiz/:id", quizHandler.DeleteQuizHandler)
+	protected.POST("/quizzes", quizHandler.CreateQuizHandler)
+	protected.GET("/quizzes", quizHandler.GetQuizzesHandler)
+	protected.GET("/quiz/:id", quizHandler.GetQuizHandler)
+	protected.PUT("/quiz/:id", quizHandler.UpdateQuizHandler)
+	protected.DELETE("/quiz/:id", quizHandler.DeleteQuizHandler)
 
 	//Questions actions
-	r.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
-	r.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
-	r.PUT("/question/:id", questionHandler.UpdateQuestionHandler)
-	r.DELETE("/question/:id", questionHandler.DeleteQuestionHandler)
+	protected.GET("/quizzes/:quiz_id/questions", questionHandler.GetQuestionsForQuizHandler)
+	protected.POST("/quizzes/:quiz_id/questions", questionHandler.CreateQuestionHandler)
+	protected.PUT("/question/:id", questionHandler.UpdateQuestionHandler)
+	protected.DELETE("/question/:id", questionHandler.DeleteQuestionHandler)
 
 	authGroup := r.Group("/auth")
 	{

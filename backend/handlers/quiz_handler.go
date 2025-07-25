@@ -28,7 +28,7 @@ func NewQuizHandler(s *services.QuizService) *QuizHandler {
 // @Success 201 {object} repositories.Quiz
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /quizzes [post]
+// @Router /api/quizzes [post]
 func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 	var req dto.QuizRequest
 
@@ -57,7 +57,7 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.QuizResponse
 // @Failure 500 {object} map[string]string
-// @Router /quizzes [get]
+// @Router /api/quizzes [get]
 func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
 	quizzes, err := h.service.List(c)
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /quiz/{id} [get]
+// @Router /api/quiz/{id} [get]
 func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	quiz, err := h.service.GetQuiz(c, idParam)
@@ -107,7 +107,7 @@ func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /quiz/{id} [put]
+// @Router /api/quiz/{id} [put]
 func (h *QuizHandler) UpdateQuizHandler(c *gin.Context) {
 	var req dto.QuizRequest
 
@@ -141,7 +141,7 @@ func (h *QuizHandler) UpdateQuizHandler(c *gin.Context) {
 // @Param id path string true "Quiz ID"
 // @Success 200 {object} map[string]string "message: Quiz deleted successfully"
 // @Failure 500 {object} map[string]string "error message"
-// @Router /quiz/{id} [delete]
+// @Router /api/quiz/{id} [delete]
 func (h *QuizHandler) DeleteQuizHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	err := h.service.Delete(c, idParam)
