@@ -37,7 +37,7 @@ func main() {
 		slog.Error("failed to ini Question Repository", slog.Any("error", err))
 		os.Exit(1)
 	}
-	authenticationRepository, err := auth.NewDatabaseUserRepository(gorm)
+	authRepository, err := auth.NewDatabaseUserRepository(gorm)
 	if err != nil {
 		slog.Error("failed to ini Authentication Repository", slog.Any("error", err))
 		os.Exit(1)
@@ -49,9 +49,9 @@ func main() {
 	quizHandler := handlers.NewQuizHandler(quizService)
 	questionHandler := handlers.NewQuestionHandler(questionService)
 
-	authHandler := handlers.NewAuthHandler(authenticationRepository)
-
 	jwtManager := auth.NewJWTManager("RadekSmrdi", time.Minute)
+	authService := auth.NewAuthService(authRepository, jwtManager)
+	authHandler := auth.NewAuthHandler(authService)
 
 	r := gin.Default()
 

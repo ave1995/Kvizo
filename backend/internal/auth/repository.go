@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type AuthenticationRepository interface {
+type AuthRepository interface {
 	RegisterUser(ctx context.Context, email, password string) (*User, error)
 	AuthenticateUser(ctx context.Context, email, password string) (*User, error)
 }

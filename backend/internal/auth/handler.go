@@ -1,7 +1,6 @@
-package handlers
+package auth
 
 import (
-	"kvizo-api/internal/auth"
 	"kvizo-api/internal/responses"
 	"net/http"
 
@@ -9,10 +8,10 @@ import (
 )
 
 type AuthHandler struct {
-	service auth.AuthenticationRepository
+	service *AuthService
 }
 
-func NewAuthHandler(s auth.AuthenticationRepository) *AuthHandler {
+func NewAuthHandler(s *AuthService) *AuthHandler {
 	return &AuthHandler{service: s}
 }
 
@@ -28,7 +27,7 @@ func NewAuthHandler(s auth.AuthenticationRepository) *AuthHandler {
 // @Failure 500 {object} map[string]string
 // @Router /auth/register [post]
 func (h *AuthHandler) RegisterUserHandler(c *gin.Context) {
-	var req auth.RegisterRequest
+	var req RegisterRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		responses.RespondWithInternalError(c, err)
@@ -56,7 +55,7 @@ func (h *AuthHandler) RegisterUserHandler(c *gin.Context) {
 // @Failure 500 {object} map[string]string
 // @Router /auth/login [post]
 func (h *AuthHandler) LoginUserHandler(c *gin.Context) {
-	var req auth.LoginRequest
+	var req LoginRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		responses.RespondWithInternalError(c, err)
