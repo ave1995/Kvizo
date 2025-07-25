@@ -116,6 +116,11 @@
         },
         "/api/quiz/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a single quiz by its ID",
                 "produces": [
                     "application/json"
@@ -170,6 +175,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update the title and description of an existing quiz",
                 "consumes": [
                     "application/json"
@@ -236,6 +246,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a quiz by ID.",
                 "consumes": [
                     "application/json"
@@ -280,6 +295,11 @@
         },
         "/api/quizzes": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve all quizzes",
                 "produces": [
                     "application/json"
@@ -310,6 +330,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a quiz with title and description",
                 "consumes": [
                     "application/json"
@@ -775,6 +800,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

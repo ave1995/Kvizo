@@ -22,6 +22,7 @@ func NewQuizHandler(s *services.QuizService) *QuizHandler {
 // @Summary Create a new quiz
 // @Description Create a quiz with title and description
 // @Tags quizzes
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param quiz body dto.QuizRequest true "Quiz info"
@@ -54,6 +55,7 @@ func (h *QuizHandler) CreateQuizHandler(c *gin.Context) {
 // @Summary Get all quizzes
 // @Description Retrieve all quizzes
 // @Tags quizzes
+// @Security BearerAuth
 // @Produce json
 // @Success 200 {array} dto.QuizResponse
 // @Failure 500 {object} map[string]string
@@ -77,6 +79,7 @@ func (h *QuizHandler) GetQuizzesHandler(c *gin.Context) {
 // @Summary Get a quiz by ID
 // @Description Retrieve a single quiz by its ID
 // @Tags quiz
+// @Security BearerAuth
 // @Produce json
 // @Param id path string true "Quiz ID"
 // @Success 200 {object} dto.QuizResponse
@@ -99,6 +102,7 @@ func (h *QuizHandler) GetQuizHandler(c *gin.Context) {
 // @Summary Update a quiz
 // @Description Update the title and description of an existing quiz
 // @Tags quiz
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "Quiz ID"
@@ -136,6 +140,7 @@ func (h *QuizHandler) UpdateQuizHandler(c *gin.Context) {
 // @Summary Delete a quiz
 // @Description Deletes a quiz by ID.
 // @Tags quiz
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "Quiz ID"

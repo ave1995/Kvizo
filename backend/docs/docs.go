@@ -127,6 +127,11 @@ const docTemplate = `{
         },
         "/api/quiz/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a single quiz by its ID",
                 "produces": [
                     "application/json"
@@ -181,6 +186,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update the title and description of an existing quiz",
                 "consumes": [
                     "application/json"
@@ -247,6 +257,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a quiz by ID.",
                 "consumes": [
                     "application/json"
@@ -291,6 +306,11 @@ const docTemplate = `{
         },
         "/api/quizzes": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve all quizzes",
                 "produces": [
                     "application/json"
@@ -321,6 +341,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a quiz with title and description",
                 "consumes": [
                     "application/json"
@@ -786,6 +811,13 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

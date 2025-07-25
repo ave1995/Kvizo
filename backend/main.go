@@ -1,5 +1,9 @@
 package main
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 import (
 	"kvizo-api/database"
 	"kvizo-api/handlers"

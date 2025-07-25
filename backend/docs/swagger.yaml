@@ -225,6 +225,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete a quiz
       tags:
       - quiz
@@ -261,6 +263,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get a quiz by ID
       tags:
       - quiz
@@ -305,6 +309,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Update a quiz
       tags:
       - quiz
@@ -326,6 +332,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all quizzes
       tags:
       - quizzes
@@ -359,6 +367,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create a new quiz
       tags:
       - quizzes
@@ -513,4 +523,9 @@ paths:
       summary: Register a new user
       tags:
       - auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
