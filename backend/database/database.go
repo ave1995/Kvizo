@@ -50,7 +50,7 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 		return nil, fmt.Errorf("gorm.Open: %w", err)
 	}
 
-	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{}, &auth.DatabaseUser{})
+	err = db.AutoMigrate(&databaseQuiz{}, &databaseQuestion{}, &auth.DatabaseUser{}, &auth.DatabaseRefreshToken{})
 	if err != nil {
 		return nil, fmt.Errorf("db.AutoMigrate: %w", err)
 	}

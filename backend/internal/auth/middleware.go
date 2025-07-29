@@ -1,6 +1,10 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"errors"
+
+	"github.com/gin-gonic/gin"
+)
 
 const (
 	UserContextKey = "user"
@@ -33,4 +37,21 @@ func AuthMiddleware(jwtManager JWTManager) gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+var ErrUserNotInContext = errors.New("user not found in context")
+var ErrUserHasInvalidTypeInContext = errors.New("user in context has invalid type")
+
+func GetUserFromContext(c *gin.Context) (*User, error) {
+	val, exists := c.Get(UserContextKey)
+	if !exists {
+		return nil, ErrUserNotInContext
+	}
+
+	user, ok := val.(*User)
+	if !ok {
+		return nil, ErrUserHasInvalidTypeInContext
+	}
+
+	return user, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,11 @@ import (
 type AuthRepository interface {
 	RegisterUser(ctx context.Context, email, password string) (*User, error)
 	AuthenticateUser(ctx context.Context, email, password string) (*User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+
+	SaveRefreshToken(ctx context.Context, token RefreshToken) error
+	RevokeRefreshToken(ctx context.Context, token string) error
+	GetRefreshToken(ctx context.Context, token string) (*RefreshToken, error)
 }
 
 type DatabaseUserRepository struct {
@@ -29,6 +35,16 @@ func getByEmail(gorm *gorm.DB, email string) (*DatabaseUser, error) {
 	var user *DatabaseUser
 
 	if err := gorm.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func getByID(gorm *gorm.DB, id uuid.UUID) (*DatabaseUser, error) {
+	var user *DatabaseUser
+
+	if err := gorm.Where("id = ?", id).First(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -81,4 +97,43 @@ func (r *DatabaseUserRepository) AuthenticateUser(ctx context.Context, email, pa
 	}
 
 	return dbUser.toUser(), nil
+}
+
+func (r *DatabaseUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*User, error) {
+	dbUser, err := getByID(r.gorm.WithContext(ctx), id)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbUser.toUser(), nil
+}
+
+func (r *DatabaseUserRepository) SaveRefreshToken(ctx context.Context, token RefreshToken) error {
+	dbToken := token.toDatabaseRefreshToken()
+
+	return r.gorm.WithContext(ctx).Create(&dbToken).Error
+}
+
+func (r *DatabaseUserRepository) RevokeRefreshToken(ctx context.Context, token string) error {
+	return r.gorm.WithContext(ctx).
+		Model(&DatabaseRefreshToken{}).
+		Where("token = ?", token).
+		Update("revoked", true).Error
+}
+
+func (r *DatabaseUserRepository) GetRefreshToken(ctx context.Context, token string) (*RefreshToken, error) {
+	var dbToken DatabaseRefreshToken
+
+	err := r.gorm.WithContext(ctx).
+		Where("token = ?", token).
+		First(&dbToken).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	result := dbToken.toRefreshToken()
+	return &result, nil
 }

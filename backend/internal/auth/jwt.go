@@ -9,8 +9,8 @@ import (
 )
 
 type JWTManager interface {
-	Generate(user *User) (string, error)
-	Verify(tokenString string) (*User, error)
+	Generate(user *User) (*AccessToken, error)
+	Verify(tokenString string) (*AccessToken, error)
 }
 
 type jwtManager struct {
@@ -29,13 +29,15 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (j *jwtManager) Generate(user *User) (string, error) {
+func (j *jwtManager) Generate(user *User) (*AccessToken, error) {
+	expiresAt := time.Now().Add(j.tokenDuration)
+
 	claims := Claims{
 		UserID: user.ID.String(),
 		Email:  user.Email,
 		// Role:   user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.tokenDuration)),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -43,13 +45,21 @@ func (j *jwtManager) Generate(user *User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString([]byte(j.secretKey))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return signedToken, nil
+	accessToken := &AccessToken{
+		Token:     signedToken,
+		ExpiresAt: expiresAt,
+		UserID:    user.ID,
+		Email:     user.Email,
+		// Role:      user.Role,
+	}
+
+	return accessToken, nil
 }
 
-func (j *jwtManager) Verify(tokenString string) (*User, error) {
+func (j *jwtManager) Verify(tokenString string) (*AccessToken, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Validate signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -67,16 +77,18 @@ func (j *jwtManager) Verify(tokenString string) (*User, error) {
 		return nil, fmt.Errorf("invalid token")
 	}
 
-	parsed, err := uuid.Parse(claims.UserID)
+	userID, err := uuid.Parse(claims.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid user ID in claims: %q: %w", claims.UserID, err)
 	}
 
-	user := &User{
-		ID:    parsed,
-		Email: claims.Email,
-		// Role:  claims.Role,
+	accessToken := &AccessToken{
+		Token:     tokenString,
+		ExpiresAt: claims.ExpiresAt.Time,
+		UserID:    userID,
+		Email:     claims.Email,
+		// Role:      claims.Role,
 	}
 
-	return user, nil
+	return accessToken, nil
 }

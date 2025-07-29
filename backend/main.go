@@ -53,8 +53,8 @@ func main() {
 	quizHandler := handlers.NewQuizHandler(quizService)
 	questionHandler := handlers.NewQuestionHandler(questionService)
 
-	jwtManager := auth.NewJWTManager("RadekSmrdi", time.Minute)
-	authService := auth.NewAuthService(authRepository, jwtManager)
+	jwtManager := auth.NewJWTManager("RadekSmrdi", 15*time.Minute)
+	authService := auth.NewAuthService(authRepository, jwtManager, 7*24*time.Hour)
 	authHandler := auth.NewAuthHandler(authService)
 
 	r := gin.Default()
