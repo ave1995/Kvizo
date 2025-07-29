@@ -2,6 +2,7 @@ package auth
 
 import (
 	"kvizo-api/internal/responses"
+	"kvizo-api/internal/validators"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,13 @@ func (h *AuthHandler) RegisterUserHandler(c *gin.Context) {
 	var req RegisterRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		responses.RespondWithInternalError(c, err)
+		responses.RespondWithBadRequest(c, err, "invalid request body")
+		return
+	}
+
+	err := validators.ValidateEmail(req.Email)
+	if err != nil {
+		responses.RespondWithBadRequest(c, err, "invalid email")
 		return
 	}
 
