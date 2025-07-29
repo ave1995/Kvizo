@@ -55,6 +55,8 @@ func (r *QuizRepository) Create(ctx context.Context, quiz *repositories.Quiz) er
 		return err
 	}
 
+	quiz.ID = dbQuiz.ID.String()
+
 	return nil
 }
 

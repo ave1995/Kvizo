@@ -63,7 +63,7 @@ func (r *QuestionRepository) Create(ctx context.Context, question *repositories.
 		return err
 	}
 
-	return r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err = r.gorm.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		_, err := getByID[databaseQuiz](tx, dbQuestion.QuizID)
 		if err != nil {
 			return err
@@ -71,6 +71,10 @@ func (r *QuestionRepository) Create(ctx context.Context, question *repositories.
 
 		return tx.Create(dbQuestion).Error
 	})
+
+	question.ID = dbQuestion.ID.String()
+
+	return err
 }
 
 func (r *QuestionRepository) Update(ctx context.Context, question *repositories.Question) error {

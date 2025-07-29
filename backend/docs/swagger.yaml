@@ -6,6 +6,15 @@ definitions:
       password:
         type: string
     type: object
+  auth.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   auth.RegisterRequest:
     properties:
       email:
@@ -152,6 +161,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete a question
       tags:
       - question
@@ -196,6 +207,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Update a question
       tags:
       - question
@@ -408,6 +421,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all questions for a quiz
       tags:
       - questions
@@ -452,6 +467,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create a new question
       tags:
       - questions
@@ -470,10 +487,10 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/auth.User'
+            $ref: '#/definitions/auth.LoginResponse'
         "400":
           description: Bad Request
           schema:

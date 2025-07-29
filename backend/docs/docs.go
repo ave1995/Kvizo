@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/question/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update the details of a question under a specific quiz",
                 "consumes": [
                     "application/json"
@@ -83,6 +88,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a question by ID.",
                 "consumes": [
                     "application/json"
@@ -398,6 +408,11 @@ const docTemplate = `{
         },
         "/api/quizzes/{quiz_id}/questions": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve all questions belonging to a specific quiz",
                 "produces": [
                     "application/json"
@@ -455,6 +470,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a question with four options under a specific quiz",
                 "consumes": [
                     "application/json"
@@ -546,10 +566,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.User"
+                            "$ref": "#/definitions/auth.LoginResponse"
                         }
                     },
                     "400": {
@@ -634,6 +654,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "string"
+                },
+                "refresh_token": {
                     "type": "string"
                 }
             }

@@ -22,6 +22,7 @@ func NewQuestionHandler(s *services.QuestionService) *QuestionHandler {
 // @Summary Create a new question
 // @Description Create a question with four options under a specific quiz
 // @Tags questions
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param quiz_id path string true "Quiz ID"
@@ -62,6 +63,7 @@ func (h *QuestionHandler) CreateQuestionHandler(c *gin.Context) {
 // @Summary Get all questions for a quiz
 // @Description Retrieve all questions belonging to a specific quiz
 // @Tags questions
+// @Security BearerAuth
 // @Produce json
 // @Param quiz_id path string true "Quiz ID"
 // @Success 200 {array} repositories.Question
@@ -84,6 +86,7 @@ func (h *QuestionHandler) GetQuestionsForQuizHandler(c *gin.Context) {
 // @Summary Update a question
 // @Description Update the details of a question under a specific quiz
 // @Tags question
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "Question ID"
@@ -124,6 +127,7 @@ func (h *QuestionHandler) UpdateQuestionHandler(c *gin.Context) {
 // @Summary Delete a question
 // @Description Deletes a question by ID.
 // @Tags question
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "Question ID"
